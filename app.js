@@ -1,7 +1,8 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const session = require("express-session");
+const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
+const session = require("express-session");
 const MongoStore = require("connect-mongo");
 
 const User = require("./models/User");
@@ -41,7 +42,30 @@ app.use(
 app.get("/login", async (req, res) => {
   const user = await User.findOne({});
   const login = user ? true : false;
-  res.status(200).render("login", { pageName: "login", login: login });
+  if (!req.session.userID)
+    res.status(200).render("login", { pageName: "login", login: login });
+  else res.redirect("/");
+});
+
+app.post("/login", async (req, res) => {
+  if (req.session.userID) res.status(200).redirect("/");
+
+  const user = await User.findOne({ email: req.body.email });
+  if (user) {
+    bcrypt.compare(req.body.password, user.password, (err, result) => {
+      if (result) {
+        req.session.userID = user._id;
+        res.status(200).redirect("/");
+      } else {
+        res.status(400).render("login", { pageName: "login", login: false });
+      }
+    });
+  } else res.status(400).render("login", { pageName: "login", login: false });
+});
+
+app.get("/logout", (req, res) => {
+  req.session.userID = null;
+  res.status(200).redirect("/");
 });
 
 app.post("/register", async (req, res) => {
@@ -49,7 +73,7 @@ app.post("/register", async (req, res) => {
 
   if (user) res.redirect("/login");
   else {
-    console.log("kullanıcı oluşturuluyor")
+    console.log("kullanıcı oluşturuluyor");
     const userInfo = {
       email: req.body.email,
       password: req.body.password,
@@ -61,7 +85,7 @@ app.post("/register", async (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.render("index", { pageName: "home" });
+  res.render("index", { pageName: "home", userID: req.session.userID });
 });
 
 app.listen(port, (err) => {
