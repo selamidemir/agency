@@ -7,7 +7,6 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const fileUpload = require("express-fileupload");
 const { body, validationResult } = require("express-validator");
-const methodOverride = require("method-override");
 
 const User = require("./models/User");
 const Portfolio = require("./models/Portfolio");
