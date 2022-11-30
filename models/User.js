@@ -27,6 +27,6 @@ UserSchema.pre("save", function (next) {
   } else next();
 });
 
-const User = mongoose.model("Photo", UserSchema);
+const User = mongoose.model("User", UserSchema);
 
 module.exports = User;

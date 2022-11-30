@@ -25,22 +25,22 @@ const PortfolioSchema = Schema({
     type: String,
     trim: true,
   },
-  file: {
+  photo: {
     type: String,
     trim: true,
     require: true,
   },
 });
 
-PortfolioSchema.pre("validate", function (next) {
-  const file = this.file.split(".");
-  const fileName = slugify(file[0], {
-    lower: true,
-    scrict: true,
-  });
-  this.file = `${fileName}.${file[1]}`;
-  next();
-});
+// PortfolioSchema.pre("validate", function (next) {
+//   const file = this.file.split(".");
+//   const fileName = slugify(file[0], {
+//     lower: true,
+//     scrict: true,
+//   });
+//   this.file = `${fileName}.${file[1]}`;
+//   next();
+// });
 
 const Portfolio = mongoose.model("Portfolio", PortfolioSchema);
 
